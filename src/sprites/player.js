@@ -24,9 +24,9 @@ export const addPlayer = (currApp, root) => {
 	return player;
 };
 
-export const getPlayer = () => player;
+export const getPlayer = () => player; // получение объекта игрока
 
-export const lockPlayer = () => {
+export const lockPlayer = () => { // блокировка игрока на время
 	if (lockTimeout) {
 		return;
 	}
@@ -43,7 +43,8 @@ export const playerShoots = () => { // стрельба
 	}
 };
 
-export const playerTick = (state) => { // состояние игрока его представление
+export const playerTick = (state) => { // передвижение игрока
+  console.log('state: ', state);
 	if (lockTimeout) {
 		player.alpha = 0.5; // прозрачность
 	} else {
@@ -53,11 +54,7 @@ export const playerTick = (state) => { // состояние игрока его
 	const playerPosition = player.position.x;
 
 	player.position.x = state.mousePosition; // позиция коробля , куда мышка направляется
-    // // Создание анимации для спрайта
-    // app.ticker.add(() => {
-    //   player.rotation += 0.1;
-    // });
-
+    // Создание анимации для спрайта
 	if (player.position.x < playerPosition) { //
 		player.rotation = -0.3; //  наклоняем корабль влево
 	} else if (player.position.x > playerPosition) {

@@ -13,6 +13,8 @@ const WIDTH = appConstants.size.WIDTH;
 const gameState = {
 	// состояние игры
 	stopped: false,
+  moveLeftActive: false,
+	moveRightActive: false,
 };
 let rootContainer;
 
@@ -56,8 +58,9 @@ const createScene = () => {
 const initInteraction = () => {
 	// интерактивность игры для пользователя
 	console.log('initInteraction');
-	gameState.mousePosition = getPlayer().position.x; //инициализирум  позиция игрок , и потом получаем позицию мышки
 
+	gameState.mousePosition = getPlayer().position.x; //инициализирум  позиция игрок , и потом получаем позицию мышки
+  gameState.app.stage.interactive = true;
 	gameState.app.stage.addEventListener('pointermove', (e) => {
 		// обработчик событий для обработки курсора мышки
 		gameState.mousePosition = e.global.x; // сохраняем позицию мышки в gameState
