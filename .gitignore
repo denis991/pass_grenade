@@ -1,0 +1,6 @@
+
+.npm
+node_modules
+TZ*
+build
+packege-lock*

@@ -1,0 +1,29 @@
+{
+  "name": "pass_grenade",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "",
+    "start": "vite",
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/denis991/pass_grenade.git"
+  },
+  "keywords": [],
+  "author": "Den gu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/denis991/pass_grenade/issues"
+  },
+  "homepage": "https://github.com/denis991/pass_grenade#readme",
+  "devDependencies": {
+    "@vitejs/plugin-legacy": "^4.0.3",
+    "vite": "^4.3.5"
+  },
+  "dependencies": {
+    "pixi.js": "^7.2.4"
+  }
+}
