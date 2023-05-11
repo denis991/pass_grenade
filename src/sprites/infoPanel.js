@@ -4,7 +4,17 @@ const style = new TextStyle({});
 
 let info; // локальная переменная для хранения информационной панели
 export const initInfo = (currApp, root) => {
-	//effects
+
+  info = new Container();
+	info.name = appConstants.containers.infoPanel;
+
+	app = currApp;
+
+	const infoPanel = new Container();
+
+	infoPanel.position.x = 20;
+	infoPanel.position.y = 20;
+
 
 	// const effectsButton = new Container();
 

@@ -44,7 +44,7 @@ export const playerShoots = () => { // стрельба
 };
 
 export const playerTick = (state) => { // передвижение игрока
-  console.log('state: ', state);
+  // console.log('state: ', state);
 	if (lockTimeout) {
 		player.alpha = 0.5; // прозрачность
 	} else {

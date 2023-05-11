@@ -8,10 +8,8 @@ const appConstants = {
 	containers: {
 		// контейнеры
 		player: 'player',
-		bullets: 'bullets',
 		people: 'people',
 		enemies: 'enemies',
-		bombs: 'bombs',
 		explosions: 'explosions',
 		infoPanel: 'infoPanel',
 		grenades: 'grenades',
@@ -19,7 +17,7 @@ const appConstants = {
 	timeouts: {
 		// задержка
 		playerLock: 2000,
-		playerShoots: 1000,
+		playerShoots: 3000,
 	},
 	probability: {
 		// вероятность

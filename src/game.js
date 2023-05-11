@@ -4,6 +4,7 @@ import { loadAssets } from './common/assets'; // текстуры
 import appConstants from './common/constants'; // константы
 import { addPlayer, getPlayer, playerShoots, playerTick } from './sprites/player'; // игрок и его состояния
 import { grenadesTick, clearGrenades, destroyGrenade, initGrenades } from './sprites/grenades'; // гранаты
+import { initEnemies, addEnemy, enemyTick, destroyEmeny } from './sprites/enemy'; // противник
 import { initInfo } from './sprites/infoPanel'; // информационная панель
 import { EventHub } from './common/eventHub'; // события игры + вероятности их возникновения
 
@@ -44,6 +45,9 @@ const createScene = () => {
 	const grenades = initGrenades(app, rootContainer); // создаём гранаты  , передаём корневой контейнер
 	rootContainer.addChild(grenades);
 
+  const enemies = initEnemies(app, rootContainer); // создаём контейнер для врага
+	addEnemy();// создаём проивника
+	rootContainer.addChild(enemies);// добавляем противника в корневой контейнер
 	// const ticker = PIXI.Ticker.shared;
 	// ticker.add((deltaTime) => {
 	// 	const fps = ticker.FPS.toFixed(2);
@@ -61,22 +65,48 @@ const initInteraction = () => {
 
 	gameState.mousePosition = getPlayer().position.x; //инициализирум  позиция игрок , и потом получаем позицию мышки
   gameState.app.stage.interactive = true;
+  // gameState.app.renderer.plugins.interaction.setEventFirst(true);
+
 	gameState.app.stage.addEventListener('pointermove', (e) => {
 		// обработчик событий для обработки курсора мышки
 		gameState.mousePosition = e.global.x; // сохраняем позицию мышки в gameState
 	});
+// пробел
+	// document.addEventListener('keydown', (e) => {
+  //   console.log('e: ', e);
+	// 	// обработчик событий для обработки клавиатуры
+	// 	if (e.code === 'Space') {
+	// 		playerShoots(); // стрельба
+	// 	}
+	// });
 
-	document.addEventListener('keydown', (e) => {
-		// обработчик событий для обработки клавиатуры
-		if (e.code === 'Space') {
-			playerShoots(); // стрельба
-		}
-	});
+
+  let mouseDownTime = 0; // Время нажатия на левую кнопку мыши
+  // Прослушиваем событие нажатия левой кнопки мыши
+  document.addEventListener('mousedown', (e) => {
+      if (e.button === 0) {
+          mouseDownTime = Date.now(); // Запоминаем время нажатия на левую кнопку мыши
+      }
+  });
+  // Прослушиваем событие отпускания левой кнопки мыши
+  document.addEventListener('mouseup', (e) => {
+      if (e.button === 0) {
+          const mouseUpTime = Date.now(); // Время отпускания левой кнопки мыши
+          const elapsedTime = mouseUpTime - mouseDownTime; // Вычисляем прошедшее время
+          console.log('Elapsed time:', elapsedTime, 'ms');
+
+          // Код, который будет выполняться при отпускании левой кнопки мыши
+          playerShoots(); // бросок гранаты
+      }
+  });
+
+
 
 	gameState.app.ticker.add((delta) => {
 		// глобальный цикл обработки цикла состояния игры
 		playerTick(gameState); // пользователь
 		grenadesTick(); // гранаты
+    enemyTick(); // противник
 	});
 };
 
