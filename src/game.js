@@ -4,7 +4,8 @@ import { loadAssets } from './common/assets'; // текстуры
 import appConstants from './common/constants'; // константы
 import { addPlayer, getPlayer, playerShoots, playerTick } from './sprites/player'; // игрок и его состояния
 import { grenadesTick, clearGrenades, destroyGrenade, initGrenades } from './sprites/grenades'; // гранаты
-// import { initEnemies, addEnemy, enemyTick, destroyEmeny } from './sprites/enemy'; // противник
+import { initEnemies, addEnemy, enemyTick, destroyEmeny } from './sprites/enemy'; // противник
+import { initFps } from './sprites/fps';
 import { initInfo } from './sprites/infoPanel'; // информационная панель
 import { EventHub } from './common/eventHub'; // события игры + вероятности их возникновения
 
@@ -48,13 +49,15 @@ const createScene = () => {
   // const enemies = initEnemies(app, rootContainer); // создаём контейнер для врага
 	// addEnemy();// создаём проивника
 	// rootContainer.addChild(enemies);// добавляем противника в корневой контейнер
-	// const ticker = PIXI.Ticker.shared;
-	// ticker.add((deltaTime) => {
-	// 	const fps = ticker.FPS.toFixed(2);
-	// 	console.log('FPS: ', fps);
-	// });
-	// app.ticker.start();
 
+  // fps
+  const getFps = () => PIXI.Ticker.shared.FPS;
+  const fps = initFps(getFps);  // создаём fps и передаём функцию обратного вызова
+
+  const ticker = PIXI.Ticker.shared;
+  ticker.add(() => {
+    fps.update();
+  });
 
 	return app;
 };

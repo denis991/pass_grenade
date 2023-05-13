@@ -52,3 +52,47 @@ export const addEnemy = () => {// добавление врага
 
 	return enemy;
 };
+
+
+export const enemyTick = () => {// состояние пришельца || вся логика пришельца
+	const allAlive = getAlivePeople(); // получаем всех живых жителей
+
+	enemies.children.forEach((e) => {// движение пришельца
+		let directionChanged = false;
+		if (e.customData.left) {// изменялось ли направление движения
+      e.position.x -= 1;// движение влево
+			if (e.position.x < 20) {// если пришелец вышел за пределы экрана
+				e.customData.left = false;// меняем направление движения
+				directionChanged = true; /// направление изменилось
+			}
+		} else {// пришелец движется !вправо!
+			e.position.x += 1;
+			if (e.position.x > appConstants.size.WIDTH - 20) {
+				e.customData.left = true;
+				directionChanged = true;
+			}
+		}
+
+		if (!directionChanged && Math.random() * 100 < appConstants.probability.enemyChangeDirection) {// рандомно мняем направление движения
+			e.customData.left = !e.customData.left;// меняем направление движения
+			const idx = randomIntFromInterval(0, 1);//меняем текстуру пришельца
+			e.gotoAndStop(idx);
+		}
+
+		const underPerson = allAlive.filter((p) => { // проверяем находится ли пришелец над жителем
+			return p - 10 <= e.position.x && p + 10 >= e.position.x;// если да то возвращаем жителя под пришельцем
+		});
+
+		if (underPerson.length) {// тарелка над жителем
+			if (Math.random() * 100 < appConstants.probability.bomb) { // нужно ли сбросить бомбу
+				//generate bomb
+				addBomb(e.position);
+			}
+		} else {
+			if (Math.random() * 100 < appConstants.probability.bomb / 4) { // если нет жителя под пришельцем то сбрасываем бомбу но 4 раза реже
+				//generate bomb
+				addBomb(e.position);
+			}
+		}
+	});
+};
