@@ -5,6 +5,7 @@ import appConstants from './common/constants'; // константы
 import { addPlayer, getPlayer, playerShoots, playerTick } from './sprites/player'; // игрок и его состояния
 import { grenadesTick, clearGrenades, destroyGrenade, initGrenades } from './sprites/grenades'; // гранаты
 import { initEnemies, addEnemy, enemyTick, destroyEmeny } from './sprites/enemy'; // противник
+import { checkCollision, destroySprite } from './common/utils';
 import { initFps } from './sprites/fps';
 import { initInfo } from './sprites/infoPanel'; // информационная панель
 import { EventHub } from './common/eventHub'; // события игры + вероятности их возникновения
@@ -46,9 +47,9 @@ const createScene = () => {
 	const grenades = initGrenades(app, rootContainer); // создаём гранаты  , передаём корневой контейнер
 	rootContainer.addChild(grenades);
 
-  // const enemies = initEnemies(app, rootContainer); // создаём контейнер для врага
-	// addEnemy();// создаём проивника
-	// rootContainer.addChild(enemies);// добавляем противника в корневой контейнер
+  const enemies = initEnemies(app, rootContainer); // создаём контейнер для врага
+	addEnemy();// создаём проивника
+	rootContainer.addChild(enemies);// добавляем противника в корневой контейнер
 
   // fps
   const getFps = () => PIXI.Ticker.shared.FPS;
@@ -109,7 +110,8 @@ const initInteraction = () => {
 		// глобальный цикл обработки цикла состояния игры
 		playerTick(gameState); // пользователь
 		grenadesTick(); // гранаты
-    // enemyTick(); // противник
+    // enemyTick(); // противник движение
+    checkAllCollisions(); // проверка столкновения 
 	});
 };
 
@@ -123,10 +125,90 @@ export const initGame = () => {
 		}
 	});
 };
+
 const restartGame = () => {
 	clearGrenades(); // очищаем гранаты
 	restorePeople(); // противник
 };
+
+// проверка столкновений
+const checkAllCollisions = () => {
+	const enemies = rootContainer.getChildByName(appConstants.containers.enemies);// получаем контейнер врага
+	const bullets = rootContainer.getChildByName(appConstants.containers.bullets); // получаем контейнер пуль
+	const people = rootContainer.getChildByName(appConstants.containers.people); // получаем контейнер жителей
+	const bombs = rootContainer.getChildByName(appConstants.containers.bombs); // получаем контейнер бомб
+	const player = rootContainer.getChildByName(appConstants.containers.player);// получаем контейнер игрока
+
+	if (enemies && bullets) {
+		const toRemove = [];
+		bullets.children.forEach((b) => {
+			enemies.children.forEach((e) => {
+				if (e && b) {
+					if (checkCollision(e, b)) {// проверка столкновения
+						toRemove.push(b); // добавляем в массив пуль для удаления
+						toRemove.push(e); // добавляем в массив врага для удаления
+						// destroyBullet(b);
+						// destroyEmeny(e);
+					}
+				}
+			});
+		});
+		toRemove.forEach((sprite) => {
+			sprite.destroyMe();
+		});
+	}
+	if (bombs && bullets) {
+		const toRemove = [];
+		bombs.children.forEach((bomb) => {
+			bullets.children.forEach((b) => {
+				if (checkCollision(bomb, b)) {
+					toRemove.push(b);
+					toRemove.push(bomb);
+					// destroyBullet(b);
+					// destroyBomb(bomb);
+				}
+			});
+		});
+		toRemove.forEach((sprite) => {
+			sprite.destroyMe();
+		});
+	}
+
+	if (bombs && player && !player.locked) {
+		const toRemove = [];
+		bombs.children.forEach((b) => {
+			if (checkCollision(b, player)) {
+				toRemove.push(b);
+				lockPlayer();
+			}
+		});
+		toRemove.forEach((sprite) => {
+			sprite.destroyMe();
+		});
+	}
+	if (bombs && people) {
+		const toRemove = [];
+		bombs.children.forEach((bomb) => {
+			people.children.forEach((p) => {
+				if (bomb && p) {
+					if (checkCollision(bomb, p)) {
+						if (toRemove.indexOf(p) === -1) {
+							toRemove.push(p);
+						}
+						if (toRemove.indexOf(bomb) === -1) {
+							toRemove.push(bomb);
+						}
+					}
+				}
+			});
+		});
+
+		toRemove.forEach((sprite) => {
+			sprite.destroyMe();
+		});
+	}
+};
+
 EventHub.on(appConstants.events.youWin, () => {
 	gameState.app.ticker.stop();
 	rootContainer.addChild(getYouWin());

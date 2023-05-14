@@ -106,3 +106,12 @@ export const grenadesTick = () => {
 		b.destroy({ children: true }); // удаляем детей ОБЪЕКТА
 	});
 };
+
+export const isGrenad = () => {
+  // проверка на наличие гранаты
+  if (grenades.children.length > 0) {
+    return true;
+  }
+  return false;
+
+}

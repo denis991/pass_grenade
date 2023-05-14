@@ -4,7 +4,7 @@ import { Container, AnimatedSprite } from 'pixi.js';
 import appConstants from '../common/constants';
 import { randomIntFromInterval, destroySprite } from '../common/utils';
 import { addExplosion } from './explosions';
-import{destroyGrenade}from './grenades';
+import{destroyGrenade,isGrenad}from './grenades';
 
 let enemies;// контейнер c врагом
 let app;
@@ -28,17 +28,17 @@ export const destroyEmeny = (enemy) => {// уничтожение врага
 };
 
 export const addEnemy = () => {// добавление врага
-	const textures = [getTexture(allTextureKeys.shipBlue), getTexture(allTextureKeys.shipBlue2)];// текстуры врага
+	const textures = [getTexture(allTextureKeys.people)];// текстуры врага
 	const enemy = new AnimatedSprite(textures);// создаем спрайт
 	enemy.anchor.set(0.5, 1);// якорь или точка привязки
-	const alivePerson = getRandomAlivePerson();// полячаем случайного жителя
-	if (alivePerson) {// если он живой
-		enemy.position.x = alivePerson;// ставим врага на позицию жителя
-	} else {
+	const isGrenades = isGrenad();// если есть граната
+	// if (isGrenades) {//  если есть граната
+	// 	enemy.position.x = isGrenades;// ставим врага на позицию жителя
+	// } else {
 		enemy.x = randomIntFromInterval(20, appConstants.size.WIDTH - 20); // если жителя нет то ставим врага в случайное место
-	}
+	// }
 	enemy.y = 80;// позиция по  у врага
-	enemy.scale.set(0.5); // размер врага
+	enemy.scale.set(0.3); // размер врага
 
 	enemy.animationSpeed = 0.1;// скорость анимации
 	enemy.customData = { // кастомные данные
@@ -54,10 +54,10 @@ export const addEnemy = () => {// добавление врага
 };
 
 
-export const enemyTick = () => {// состояние пришельца || вся логика пришельца
-	const allAlive = getAlivePeople(); // получаем всех живых жителей
+export const enemyTick = () => {// состояние enemy || вся логика enemy
+	const isGrenades = isGrenad(); // получаем всех живых жителей
 
-	enemies.children.forEach((e) => {// движение пришельца
+	enemies.children.forEach((e) => {// движение enemy
 		let directionChanged = false;
 		if (e.customData.left) {// изменялось ли направление движения
       e.position.x -= 1;// движение влево
@@ -75,13 +75,13 @@ export const enemyTick = () => {// состояние пришельца || вс
 
 		if (!directionChanged && Math.random() * 100 < appConstants.probability.enemyChangeDirection) {// рандомно мняем направление движения
 			e.customData.left = !e.customData.left;// меняем направление движения
-			const idx = randomIntFromInterval(0, 1);//меняем текстуру пришельца
+			const idx = randomIntFromInterval(0, 1);//меняем текстуру enemy
 			e.gotoAndStop(idx);
 		}
 
-		const underPerson = allAlive.filter((p) => { // проверяем находится ли пришелец над жителем
-			return p - 10 <= e.position.x && p + 10 >= e.position.x;// если да то возвращаем жителя под пришельцем
-		});
+		// const underPerson = isGrenades.filter((p) => { // проверяем находится ли пришелец над жителем
+		// 	return p - 10 <= e.position.x && p + 10 >= e.position.x;// если да то возвращаем жителя под enemys
+		// });
 
 		if (underPerson.length) {// тарелка над жителем
 			if (Math.random() * 100 < appConstants.probability.bomb) { // нужно ли сбросить бомбу
@@ -89,7 +89,7 @@ export const enemyTick = () => {// состояние пришельца || вс
 				addBomb(e.position);
 			}
 		} else {
-			if (Math.random() * 100 < appConstants.probability.bomb / 4) { // если нет жителя под пришельцем то сбрасываем бомбу но 4 раза реже
+			if (Math.random() * 100 < appConstants.probability.bomb / 4) { // если нет жителя под enemys то сбрасываем бомбу но 4 раза реже
 				//generate bomb
 				addBomb(e.position);
 			}
